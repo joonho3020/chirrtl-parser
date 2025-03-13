@@ -1,6 +1,6 @@
-use crate::parser::ast;
-use crate::parser::lexer::*;
-use crate::parser::Int;
+use crate::ast;
+use crate::ast::Int;
+use crate::lexer::*;
 
 grammar;
 
