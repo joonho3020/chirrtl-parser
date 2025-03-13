@@ -1,5 +1,5 @@
 pub mod ast;
-mod lexer;
+pub mod lexer;
 
 use crate::ast::Circuit;
 use crate::firrtl::*;
