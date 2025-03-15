@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{Display, Debug};
 use num_bigint::{BigInt, ParseBigIntError};
 use num_traits::{FromPrimitive, Num};
 use std::str::FromStr;
@@ -91,7 +91,7 @@ impl Display for Float {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Reference {
     Ref(Identifier),
     RefDot(Box<Reference>, Identifier),
@@ -107,6 +107,12 @@ impl Display for Reference {
             Self::RefIdxInt(r, int) => write!(f, "{}[{:?}]", r, int),
             Self::RefIdxExpr(r, expr) => write!(f, "{}[{}]", r, expr),
         }
+    }
+}
+
+impl Debug for Reference {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self)
     }
 }
 
