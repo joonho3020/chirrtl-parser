@@ -40,7 +40,7 @@ impl From<u32> for Int {
 }
 
 
-#[derive(Debug, Default, Clone, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub struct Info(pub String);
 
 impl Display for Info {
@@ -73,7 +73,7 @@ impl Display for Identifier {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Float {
     pub integer: u32,
     pub decimal: u32,
@@ -310,7 +310,7 @@ impl Display for Expr {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TypeGround {
     Clock,
     Reset,
@@ -348,7 +348,7 @@ impl Display for TypeGround {
 
 pub type Fields = Vec<Box<Field>>;
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Field {
     Straight(Identifier, Box<Type>),
     Flipped(Identifier, Box<Type>),
@@ -367,7 +367,7 @@ impl Display for Field {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TypeAggregate {
     Fields(Box<Fields>),
     Array(Box<Type>, Int),
@@ -390,7 +390,7 @@ impl Display for TypeAggregate {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     TypeGround(TypeGround),
     ConstTypeGround(TypeGround),
@@ -409,7 +409,7 @@ impl Display for Type {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub enum ChirrtlMemoryReadUnderWrite {
     #[default]
     Undefined,
@@ -417,7 +417,7 @@ pub enum ChirrtlMemoryReadUnderWrite {
     New
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ChirrtlMemory {
     SMem(Identifier, Type, Option<ChirrtlMemoryReadUnderWrite>, Info),
     CMem(Identifier, Type, Info),
@@ -440,7 +440,7 @@ impl Display for ChirrtlMemory {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ChirrtlMemoryPort {
     Write(Identifier, Identifier, Expr, Reference, Info),
     Read (Identifier, Identifier, Expr, Reference, Info),
@@ -465,7 +465,7 @@ impl Display for ChirrtlMemoryPort {
 
 pub type Stmts = Vec<Box<Stmt>>;
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Stmt {
     Skip(Info),
     Wire(Identifier, Type, Info),
@@ -558,7 +558,7 @@ impl Display for Stmt {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Port {
     Input(Identifier, Type, Info),
     Output(Identifier, Type, Info),
@@ -579,7 +579,7 @@ impl Display for Port {
 
 pub type Ports = Vec<Box<Port>>;
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Module  {
     pub name: Identifier,
     pub ports: Ports,
@@ -593,7 +593,7 @@ impl Module {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DefName(Identifier);
 
 impl From<Identifier> for DefName {
@@ -610,7 +610,7 @@ impl Display for DefName {
 
 pub type Parameters = Vec<Box<Parameter>>;
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Parameter {
     IntParam(Identifier, Int),
     FloatParam(Identifier, Float),
@@ -627,7 +627,7 @@ impl Display for Parameter {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExtModule {
     pub name: Identifier,
     pub ports: Ports,
@@ -650,7 +650,7 @@ pub struct IntModule {
     pub info: Info,
 }
 
-#[derive(Debug, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CircuitModule {
     Module(Module),
     ExtModule(ExtModule),
@@ -659,7 +659,7 @@ pub enum CircuitModule {
 
 pub type CircuitModules = Vec<Box<CircuitModule>>;
 
-#[derive(Debug, Default, Clone, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub struct Annotations(pub serde_json::Value);
 
 impl Annotations {
@@ -669,7 +669,7 @@ impl Annotations {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub struct Version(pub u32, pub u32, pub u32);
 
 impl Display for Version {
@@ -678,7 +678,7 @@ impl Display for Version {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Circuit {
     pub version: Version,
     pub name: Identifier,
