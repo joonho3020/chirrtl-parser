@@ -17,18 +17,6 @@ pub fn parse_circuit(source: &str) -> Result<Circuit, FIRRTLParserError> {
     parser.parse(lexer)
 }
 
-pub fn parse_module(source: &str) -> Result<Module, FIRRTLParserError> {
-    let lexer = FIRRTLLexer::new(source);
-    let parser = ModuleParser::new();
-    parser.parse(lexer)
-}
-
-pub fn parse_circuitmodule(source: &str) -> Result<CircuitModule, FIRRTLParserError> {
-    let lexer = FIRRTLLexer::new(source);
-    let parser = CircuitModuleParser::new();
-    parser.parse(lexer)
-}
-
 #[cfg(test)]
 mod lexer_test {
     use crate::lexer::*;
@@ -654,37 +642,6 @@ extmodule GenericDigitalOutIOCell : @[generators/chipyard/src/main/scala/iocell/
                         eprintln!("Could not read file {}: {}", path.display(), e);
                     }
                 }
-            }
-        }
-        Ok(())
-    }
-
-    use super::parse_module;
-    use super::parse_circuitmodule;
-
-    #[test]
-    fn boom_module_parser() -> Result<(), std::io::Error> {
-        for entry in std::fs::read_dir("./test-inputs/boom-modules/")? {
-            let entry = entry?;
-            let path = entry.path();
-
-            // Check if it's a file (not a directory)
-            if path.is_file() {
-                let _ = parse_module(path.to_str().unwrap());
-            }
-        }
-        Ok(())
-    }
-
-    #[test]
-    fn boom_circuitmodule_parser() -> Result<(), std::io::Error> {
-        for entry in std::fs::read_dir("./test-inputs/boom-modules/")? {
-            let entry = entry?;
-            let path = entry.path();
-
-            // Check if it's a file (not a directory)
-            if path.is_file() {
-                let _ = parse_circuitmodule(path.to_str().unwrap());
             }
         }
         Ok(())
