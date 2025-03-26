@@ -3,7 +3,7 @@ use num_bigint::{BigInt, ParseBigIntError};
 use num_traits::{FromPrimitive, Num};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Int(BigInt);
 
 impl Int {
@@ -40,7 +40,7 @@ impl From<u32> for Int {
 }
 
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Info(pub String);
 
 impl Display for Info {
@@ -49,7 +49,7 @@ impl Display for Info {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Width(pub u32);
 
 impl Display for Width {
@@ -58,7 +58,7 @@ impl Display for Width {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Identifier {
     ID(Int),
     Name(String),
@@ -73,7 +73,7 @@ impl Display for Identifier {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Float {
     pub integer: u32,
     pub decimal: u32,
@@ -91,7 +91,7 @@ impl Display for Float {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Reference {
     Ref(Identifier),
     RefDot(Box<Reference>, Identifier),
@@ -129,7 +129,7 @@ impl Reference {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum PrimOp2Expr {
     Add,
     Sub,
@@ -150,7 +150,7 @@ pub enum PrimOp2Expr {
     Cat,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum PrimOp1Expr {
     AsUInt,
     AsSInt,
@@ -165,7 +165,7 @@ pub enum PrimOp1Expr {
 }
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum PrimOp1Expr1Int {
     Pad,
     Shl,
@@ -175,7 +175,7 @@ pub enum PrimOp1Expr1Int {
     BitSel,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum PrimOp1Expr2Int {
     BitSelRange,
 }
@@ -261,7 +261,7 @@ fn fmt_exprs(exprs: &Exprs) -> String {
     return ret;
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Expr {
     UIntNoInit(Width),
     UIntInit(Width, Int),
@@ -310,7 +310,7 @@ impl Display for Expr {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum TypeGround {
     Clock,
     Reset,
@@ -348,7 +348,7 @@ impl Display for TypeGround {
 
 pub type Fields = Vec<Box<Field>>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Field {
     Straight(Identifier, Box<Type>),
     Flipped(Identifier, Box<Type>),
@@ -367,7 +367,7 @@ impl Display for Field {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum TypeAggregate {
     Fields(Box<Fields>),
     Array(Box<Type>, Int),
@@ -390,7 +390,7 @@ impl Display for TypeAggregate {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Type {
     TypeGround(TypeGround),
     ConstTypeGround(TypeGround),
@@ -409,7 +409,7 @@ impl Display for Type {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum ChirrtlMemoryReadUnderWrite {
     #[default]
     Undefined,
@@ -417,7 +417,7 @@ pub enum ChirrtlMemoryReadUnderWrite {
     New
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum ChirrtlMemory {
     SMem(Identifier, Type, Option<ChirrtlMemoryReadUnderWrite>, Info),
     CMem(Identifier, Type, Info),
@@ -440,7 +440,7 @@ impl Display for ChirrtlMemory {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum ChirrtlMemoryPort {
     Write(Identifier, Identifier, Expr, Reference, Info),
     Read (Identifier, Identifier, Expr, Reference, Info),
@@ -465,7 +465,7 @@ impl Display for ChirrtlMemoryPort {
 
 pub type Stmts = Vec<Box<Stmt>>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Stmt {
     Skip(Info),
     Wire(Identifier, Type, Info),
@@ -558,7 +558,7 @@ impl Display for Stmt {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Port {
     Input(Identifier, Type, Info),
     Output(Identifier, Type, Info),
@@ -579,7 +579,7 @@ impl Display for Port {
 
 pub type Ports = Vec<Box<Port>>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Module  {
     pub name: Identifier,
     pub ports: Ports,
@@ -593,7 +593,7 @@ impl Module {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DefName(Identifier);
 
 impl From<Identifier> for DefName {
@@ -610,7 +610,7 @@ impl Display for DefName {
 
 pub type Parameters = Vec<Box<Parameter>>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Parameter {
     IntParam(Identifier, Int),
     FloatParam(Identifier, Float),
@@ -627,7 +627,7 @@ impl Display for Parameter {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ExtModule {
     pub name: Identifier,
     pub ports: Ports,
@@ -650,7 +650,7 @@ pub struct IntModule {
     pub info: Info,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum CircuitModule {
     Module(Module),
     ExtModule(ExtModule),
@@ -669,7 +669,7 @@ impl Annotations {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Version(pub u32, pub u32, pub u32);
 
 impl Display for Version {
