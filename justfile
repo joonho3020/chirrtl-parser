@@ -48,3 +48,9 @@ clean_build:
 
 [group: 'clean']
 clean_all: clean clean_build
+
+[group: 'publish']
+publish:
+  cargo release patch
+  cargo package
+  cargo publish
