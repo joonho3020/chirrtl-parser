@@ -6,6 +6,7 @@ authors = ["Joonho Whangbo <joonho.whangbo@berkeley.edu>"]
 description = "A Rust library that can parse a CHIRRTL text file into a typed AST"
 repository = "https://github.com/joonho3020/chirrtl-parser.git"
 readme = "README.md"
+license = "MIT"
 
 [dependencies]
 logos = "0.12"
