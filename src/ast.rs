@@ -3,7 +3,7 @@ use num_bigint::{BigInt, ParseBigIntError};
 use num_traits::{FromPrimitive, Num};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Int(BigInt);
 
 impl Int {
@@ -39,6 +39,11 @@ impl From<u32> for Int {
     }
 }
 
+impl Debug for Int {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0h{}", self.0.to_str_radix(16).to_uppercase())
+    }
+}
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Info(pub String);
