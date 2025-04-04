@@ -1,6 +1,6 @@
 [package]
 name = "chirrtl-parser"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Joonho Whangbo <joonho.whangbo@berkeley.edu>"]
 description = "A Rust library that can parse a CHIRRTL text file into a typed AST"

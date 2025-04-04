@@ -371,10 +371,11 @@ impl Display for Expr {
             Expr::Reference(r) => write!(f, "{}", r),
             Expr::Mux(cond, te, fe) => write!(f, "mux({}, {}, {})", cond, te, fe),
             Expr::ValidIf(cond, te) => write!(f, "validif({}, {})", cond, te),
-            Expr::PrimOp2Expr(op, a, b) => write!(f, "{:?}({}, {})", op, a, b),
-            Expr::PrimOp1Expr(op, a) => write!(f, "{:?}({})", op, a),
-            Expr::PrimOp1Expr1Int(op, a, b) => write!(f, "{:?}({}, {:?})", op, a, b),
-            Expr::PrimOp1Expr2Int(op, a, b, c) => write!(f, "{:?}({}, {:?}, {:?})", op, a, b, c),
+            Expr::PrimOp2Expr(op, a, b) => write!(f, "{}({}, {})", op, a, b),
+            Expr::PrimOp1Expr(op, a) => write!(f, "{}({})", op, a),
+            Expr::PrimOp1Expr1Int(PrimOp1Expr1Int::BitSel, a, b) => write!(f, "{}({})", a, b),
+            Expr::PrimOp1Expr1Int(op, a, b) => write!(f, "{}({}, {})", op, a, b),
+            Expr::PrimOp1Expr2Int(_op, a, b, c) => write!(f, "{}({}, {})", a, b, c),
         }
     }
 }
