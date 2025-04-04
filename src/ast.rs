@@ -453,9 +453,14 @@ impl Display for TypeAggregate {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Fields(fields) => {
+                let num_fields = fields.len();
                 write!(f, "{{ ")?;
-                for field in fields.iter() {
-                    write!(f, "{}, ", field)?;
+                for (i, field) in fields.iter().enumerate() {
+                    if i == num_fields - 1 {
+                        write!(f, "{}", field)?;
+                    } else {
+                        write!(f, "{}, ", field)?;
+                    }
                 }
                 write!(f, " }}")
             }
