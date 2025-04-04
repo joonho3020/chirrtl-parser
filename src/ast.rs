@@ -183,7 +183,6 @@ pub enum PrimOp1Expr1Int {
     Shr,
     Head,
     Tail,
-    BitSel,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -289,7 +288,7 @@ impl From<String> for PrimOp1Expr1Int {
             "shr"  => { Self::Shr },
             "head"  => { Self::Head },
             "tail"  => { Self::Tail },
-            _ => { Self::BitSel }
+            _ => { panic!("Unrecognized PrimOp1Expr1Int"); }
         }
     }
 }
@@ -303,7 +302,6 @@ impl std::fmt::Display for PrimOp1Expr1Int {
             PrimOp1Expr1Int::Shr => "shr",
             PrimOp1Expr1Int::Head => "head",
             PrimOp1Expr1Int::Tail => "tail",
-            PrimOp1Expr1Int::BitSel => panic!("Display called for bitsel"),
         };
         write!(f, "{s}")
     }
@@ -382,7 +380,6 @@ impl Display for Expr {
             Expr::ValidIf(cond, te) => write!(f, "validif({}, {})", cond, te),
             Expr::PrimOp2Expr(op, a, b) => write!(f, "{}({}, {})", op, a, b),
             Expr::PrimOp1Expr(op, a) => write!(f, "{}({})", op, a),
-            Expr::PrimOp1Expr1Int(PrimOp1Expr1Int::BitSel, a, b) => write!(f, "{}({})", a, b),
             Expr::PrimOp1Expr1Int(op, a, b) => write!(f, "{}({}, {})", op, a, b),
             Expr::PrimOp1Expr2Int(op, a, b, c) => write!(f, "{}({}, {}, {})", op, a, b, c),
         }
