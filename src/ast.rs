@@ -603,7 +603,7 @@ impl Display for Stmt {
             Stmt::Skip(info) => write!(f, "skip {}", info),
             Stmt::Wire(name, tpe, info) => write!(f, "wire {} : {} {}", name, tpe, info),
             Stmt::Reg(name, tpe, clk, info) => write!(f, "reg {} : {}, {} {}", name, tpe, clk, info),
-            Stmt::RegReset(name, tpe, clk, rst, init, info) => write!(f, "reg {} : {}, {}, {}, {} {}", name, tpe, clk, rst, init, info),
+            Stmt::RegReset(name, tpe, clk, rst, init, info) => write!(f, "regreset {} : {}, {}, {}, {} {}", name, tpe, clk, rst, init, info),
             Stmt::ChirrtlMemory(cm) => write!(f, "{}", cm),
             Stmt::ChirrtlMemoryPort(cmp) => write!(f, "{}", cmp),
             Stmt::Inst(inst, module, info) => write!(f, "{} of {} {}", inst, module, info),
