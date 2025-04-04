@@ -316,6 +316,15 @@ impl From<String> for PrimOp1Expr2Int {
     }
 }
 
+impl std::fmt::Display for PrimOp1Expr2Int {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            PrimOp1Expr2Int::BitSelRange => "bits",
+        };
+        write!(f, "{s}")
+    }
+}
+
 pub type Exprs = Vec<Box<Expr>>;
 
 fn fmt_exprs(exprs: &Exprs) -> String {
@@ -375,7 +384,7 @@ impl Display for Expr {
             Expr::PrimOp1Expr(op, a) => write!(f, "{}({})", op, a),
             Expr::PrimOp1Expr1Int(PrimOp1Expr1Int::BitSel, a, b) => write!(f, "{}({})", a, b),
             Expr::PrimOp1Expr1Int(op, a, b) => write!(f, "{}({}, {})", op, a, b),
-            Expr::PrimOp1Expr2Int(_op, a, b, c) => write!(f, "{}({}, {})", a, b, c),
+            Expr::PrimOp1Expr2Int(op, a, b, c) => write!(f, "{}({}, {}, {})", op, a, b, c),
         }
     }
 }
