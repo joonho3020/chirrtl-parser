@@ -45,6 +45,12 @@ impl Debug for Int {
     }
 }
 
+impl Display for Int {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.to_string())
+    }
+}
+
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Info(pub String);
 
@@ -212,6 +218,31 @@ impl From<String> for PrimOp2Expr {
     }
 }
 
+impl Display for PrimOp2Expr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            PrimOp2Expr::Add => "add",
+            PrimOp2Expr::Sub => "sub",
+            PrimOp2Expr::Mul => "mul",
+            PrimOp2Expr::Div => "div",
+            PrimOp2Expr::Rem => "rem",
+            PrimOp2Expr::Lt => "lt",
+            PrimOp2Expr::Leq => "leq",
+            PrimOp2Expr::Gt => "gt",
+            PrimOp2Expr::Geq => "geq",
+            PrimOp2Expr::Eq => "eq",
+            PrimOp2Expr::Neq => "neq",
+            PrimOp2Expr::Dshl => "dshl",
+            PrimOp2Expr::Dshr => "dshr",
+            PrimOp2Expr::And => "and",
+            PrimOp2Expr::Or => "or",
+            PrimOp2Expr::Xor => "xor",
+            PrimOp2Expr::Cat => "cat",
+        };
+        write!(f, "{s}")
+    }
+}
+
 impl From<String> for PrimOp1Expr {
     fn from(value: String) -> Self {
         match value.as_str() {
@@ -232,6 +263,24 @@ impl From<String> for PrimOp1Expr {
     }
 }
 
+impl std::fmt::Display for PrimOp1Expr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            PrimOp1Expr::AsUInt => "asUInt",
+            PrimOp1Expr::AsSInt => "asSInt",
+            PrimOp1Expr::AsClock => "asClock",
+            PrimOp1Expr::AsAsyncReset => "asAsyncReset",
+            PrimOp1Expr::Cvt => "cvt",
+            PrimOp1Expr::Neg => "neg",
+            PrimOp1Expr::Not => "not",
+            PrimOp1Expr::Andr => "andr",
+            PrimOp1Expr::Orr => "orr",
+            PrimOp1Expr::Xorr => "xorr",
+        };
+        write!(f, "{s}")
+    }
+}
+
 impl From<String> for PrimOp1Expr1Int {
     fn from(value: String) -> Self {
         match value.as_str() {
@@ -242,6 +291,21 @@ impl From<String> for PrimOp1Expr1Int {
             "tail"  => { Self::Tail },
             _ => { Self::BitSel }
         }
+    }
+}
+
+
+impl std::fmt::Display for PrimOp1Expr1Int {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            PrimOp1Expr1Int::Pad => "pad",
+            PrimOp1Expr1Int::Shl => "shl",
+            PrimOp1Expr1Int::Shr => "shr",
+            PrimOp1Expr1Int::Head => "head",
+            PrimOp1Expr1Int::Tail => "tail",
+            PrimOp1Expr1Int::BitSel => panic!("Display called for bitsel"),
+        };
+        write!(f, "{s}")
     }
 }
 
