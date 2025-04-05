@@ -115,7 +115,7 @@ impl Display for Reference {
         match self {
             Self::Ref(name)    => write!(f, "{}", name),
             Self::RefDot(r, name) => write!(f, "{}.{}", r, name),
-            Self::RefIdxInt(r, int) => write!(f, "{}[{:?}]", r, int),
+            Self::RefIdxInt(r, int) => write!(f, "{}[{}]", r, int),
             Self::RefIdxExpr(r, expr) => write!(f, "{}[{}]", r, expr),
         }
     }
