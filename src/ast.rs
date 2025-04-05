@@ -465,7 +465,7 @@ impl Display for TypeAggregate {
                 write!(f, " }}")
             }
             Self::Array(tpe, idx) => {
-                write!(f, "{}[{:?}]", tpe, idx)
+                write!(f, "{}[{}]", tpe, idx)
             }
         }
     }
@@ -701,7 +701,7 @@ pub enum Parameter {
 impl Display for Parameter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::IntParam(name, value) => write!(f, "parameter {} = {:?}", name, value),
+            Self::IntParam(name, value) => write!(f, "parameter {} = {}", name, value),
             Self::FloatParam(name, value) => write!(f, "parameter {} = {}", name, value),
             Self::StringParam(name, value) => write!(f, "parameter {} = {}", name, value),
         }
@@ -755,7 +755,7 @@ pub struct Version(pub u32, pub u32, pub u32);
 
 impl Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Version {}.{}.{}", self.0, self.1, self.2)
+        write!(f, "version {}.{}.{}", self.0, self.1, self.2)
     }
 }
 
