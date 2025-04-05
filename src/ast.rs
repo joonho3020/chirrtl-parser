@@ -114,7 +114,12 @@ impl Display for Reference {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Ref(name)    => write!(f, "{}", name),
-            Self::RefDot(r, name) => write!(f, "{}.{}", r, name),
+            Self::RefDot(r, name) => {
+                match name {
+                    Identifier::Name(name) => write!(f, "{}.{}", r, name),
+                    Identifier::ID(x)      => write!(f, "{}.`{}`", r, x),
+                }
+            }
             Self::RefIdxInt(r, int) => write!(f, "{}[{}]", r, int),
             Self::RefIdxExpr(r, expr) => write!(f, "{}[{}]", r, expr),
         }
@@ -434,10 +439,16 @@ impl Display for Field {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Straight(id, tpe) => {
-                write!(f, "{}: {}", id, tpe)
+                match id {
+                    Identifier::Name(name) => write!(f, "{} : {}", name, tpe),
+                    Identifier::ID(x)      => write!(f, "`{}` : {}", x, tpe),
+                }
             }
             Self::Flipped(id, tpe) => {
-                write!(f, "flip {}: {}", id, tpe)
+                match id {
+                    Identifier::Name(name) => write!(f, "flip {} : {}", name, tpe),
+                    Identifier::ID(x)      => write!(f, "flip `{}` : {}", x, tpe),
+                }
             }
         }
     }
