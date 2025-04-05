@@ -606,7 +606,7 @@ impl Display for Stmt {
             Stmt::RegReset(name, tpe, clk, rst, init, info) => write!(f, "regreset {} : {}, {}, {}, {} {}", name, tpe, clk, rst, init, info),
             Stmt::ChirrtlMemory(cm) => write!(f, "{}", cm),
             Stmt::ChirrtlMemoryPort(cmp) => write!(f, "{}", cmp),
-            Stmt::Inst(inst, module, info) => write!(f, "{} of {} {}", inst, module, info),
+            Stmt::Inst(inst, module, info) => write!(f, "inst {} of {} {}", inst, module, info),
             Stmt::Node(name, expr, info) => write!(f, "node {} = {} {}", name, expr, info),
             Stmt::Connect(lhs, rhs, info) => write!(f, "connect {}, {} {}", lhs, rhs, info),
             Stmt::Invalidate(reference, info) => write!(f, "invalidate {} {}", reference, info),
