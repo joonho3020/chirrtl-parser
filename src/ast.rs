@@ -56,7 +56,11 @@ pub struct Info(pub String);
 
 impl Display for Info {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "@[{}]", self.0)
+        if self == &Info::default() {
+            Ok(())
+        } else {
+            write!(f, "@[{}]", self.0)
+        }
     }
 }
 
