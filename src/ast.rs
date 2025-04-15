@@ -690,7 +690,7 @@ impl Module {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct DefName(Identifier);
+pub struct DefName(pub Identifier);
 
 impl From<Identifier> for DefName {
     fn from(value: Identifier) -> Self {
