@@ -285,18 +285,18 @@ pub Stmt: ast::Stmt = {
   "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent" "else" "symbol" "indent" <stmts_false: Stmts> "dedent" => ast::Stmt::When(cond, ast::Info::default(), stmts_true, Some(stmts_false)),
   "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent"  => ast::Stmt::When(cond, ast::Info::default(), stmts_true, None),
 
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(clk, clk_val, msg, Some(exprs), info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" <info: Info> => ast::Stmt::Printf(clk, clk_val, msg, Some(exprs), info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(clk, clk_val, msg, None, info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" <info: Info> => ast::Stmt::Printf(clk, clk_val, msg, None, info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" <info: Info> => ast::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(Some(name), clk, clk_val, msg, None, info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" <info: Info> => ast::Stmt::Printf(None, clk, clk_val, msg, None, info),
 
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(clk, clk_val, msg, Some(exprs), ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")"              => ast::Stmt::Printf(clk, clk_val, msg, Some(exprs), ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(clk, clk_val, msg, None, ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")"              => ast::Stmt::Printf(clk, clk_val, msg, None, ast::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), ast::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")"              => ast::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), ast::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(Some(name), clk, clk_val, msg, None, ast::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")"              => ast::Stmt::Printf(None, clk, clk_val, msg, None, ast::Info::default()),
 
-  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Assert(clk, pred, cond, msg, info),
-  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier>              => ast::Stmt::Assert(clk, pred, cond, msg, ast::Info::default()),
+  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Assert(Some(name), clk, pred, cond, msg, info),
+  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier>              => ast::Stmt::Assert(Some(name), clk, pred, cond, msg, ast::Info::default()),
 
   "skip"              => ast::Stmt::Skip(ast::Info::default()),
   "skip" <info: Info> => ast::Stmt::Skip(info),

@@ -574,8 +574,8 @@ pub enum Stmt {
     Connect(Expr, Expr, Info),
     Invalidate(Expr, Info),
     When(Expr, Info, Stmts, Option<Stmts>),
-    Printf(Expr, Expr, String, Option<Exprs>, Info),
-    Assert(Expr, Expr, Expr, String, Info),
+    Printf(Option<Identifier>, Expr, Expr, String, Option<Exprs>, Info),
+    Assert(Option<Identifier>, Expr, Expr, Expr, String, Info),
 // Memory()
 // Stop(Expr, Expr, u64, Info),
 // Stop(Expr, Expr, u64, Info),
@@ -625,15 +625,27 @@ impl Display for Stmt {
             Stmt::Node(name, expr, info) => write!(f, "node {} = {} {}", name, expr, info),
             Stmt::Connect(lhs, rhs, info) => write!(f, "connect {}, {} {}", lhs, rhs, info),
             Stmt::Invalidate(reference, info) => write!(f, "invalidate {} {}", reference, info),
-            Stmt::Printf(clk, clk_val, msg, fields_opt, info) => {
+            Stmt::Printf(name_opt, clk, clk_val, msg, fields_opt, info) => {
                 if let Some(fields) = fields_opt {
-                    write!(f, "printf({}, {}, {}, {}) : {}", clk, clk_val, msg, fmt_exprs(fields), info)
+                    if let Some(name) = name_opt {
+                        write!(f, "printf({}, {}, {}, {}) : {} {}", clk, clk_val, msg, fmt_exprs(fields), name, info)
+                    } else {
+                        write!(f, "printf({}, {}, {}, {}) : {}", clk, clk_val, msg, fmt_exprs(fields), info)
+                    }
                 } else {
-                    write!(f, "printf({}, {}, {}) : {}", clk, clk_val, msg, info)
+                    if let Some(name) = name_opt {
+                        write!(f, "printf({}, {}, {}) : {} {}", clk, clk_val, msg, name, info)
+                    } else {
+                        write!(f, "printf({}, {}, {}) : {}", clk, clk_val, msg, info)
+                    }
                 }
             }
-            Stmt::Assert(clk, cond, cond_val, msg, info) => {
-                write!(f, "assert({}, {}, {}, {}) : {}", clk, cond, cond_val, msg, info)
+            Stmt::Assert(name_opt, clk, cond, cond_val, msg, info) => {
+                if let Some(name) = name_opt {
+                    write!(f, "assert({}, {}, {}, {}) : {} {}", clk, cond, cond_val, msg, name, info)
+                } else {
+                    write!(f, "assert({}, {}, {}, {}) : {}", clk, cond, cond_val, msg, info)
+                }
             }
             Stmt::When(cond, info, when_stmts, else_stmts_opt) => {
                 // NOTE: Cannot track indent inside the Display trait, so this will cause weirdly
