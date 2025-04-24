@@ -88,6 +88,41 @@ impl Display for Identifier {
     }
 }
 
+impl Identifier {
+    pub fn flat(&self) -> Self {
+        match self {
+            Self::ID(..) => self.clone(),
+            Self::Name(x) => {
+                let mut result = String::new();
+                let mut chars = x.chars().peekable();
+                while let Some(c) = chars.next() {
+                    match c {
+                        '.' => {
+                            if let Some(&next) = chars.peek() {
+                                if next.is_alphabetic() || next == '_' {
+                                    result.push('_');
+                                }
+                            }
+                        }
+                        '[' => {
+                            while let Some(c2) = chars.next() {
+                                if c2 == ']' {
+                                    result.push('_');
+                                    break;
+                                } else {
+                                    result.push(c2);
+                                }
+                            }
+                        }
+                        _ => result.push(c),
+                    }
+                }
+                Identifier::Name(result)
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Float {
     pub integer: u32,
