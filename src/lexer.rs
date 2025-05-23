@@ -1,4 +1,4 @@
-use crate::ast::Int;
+use rusty_firrtl::Int;
 use logos::{Lexer, Logos};
 use std::collections::VecDeque;
 use std::num::ParseIntError;

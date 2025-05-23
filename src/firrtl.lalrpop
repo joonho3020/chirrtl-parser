@@ -1,5 +1,4 @@
-use crate::ast;
-use crate::ast::Int;
+use rusty_firrtl::Int;
 use crate::lexer::*;
 
 grammar;
@@ -96,270 +95,270 @@ extern {
   }
 }
 
-pub Float: ast::Float = {
-    <integer: "int"> "."  <decimal: "id"> => ast::Float::new(integer.to_u32(), decimal.to_u32()),
+pub Float: rusty_firrtl::Float = {
+    <integer: "int"> "."  <decimal: "id"> => rusty_firrtl::Float::new(integer.to_u32(), decimal.to_u32()),
 };
 
-pub Info: ast::Info = {
-  <info: "info"> => ast::Info(info)
+pub Info: rusty_firrtl::Info = {
+  <info: "info"> => rusty_firrtl::Info(info)
 };
 
 // TODO: Add radint case
-pub Width: ast::Width = {
-    "<" <w: "int"> ">" => ast::Width(w.to_u32()),
+pub Width: rusty_firrtl::Width = {
+    "<" <w: "int"> ">" => rusty_firrtl::Width(w.to_u32()),
 };
 
-pub TypeGround: ast::TypeGround = {
-    "reset" => ast::TypeGround::Reset,
-    "clock" => ast::TypeGround::Clock,
-    "async_reset" => ast::TypeGround::AsyncReset,
-    "uint" <w: Width> => ast::TypeGround::UInt(Some(w)),
-    "uint"            => ast::TypeGround::UInt(None),
-    "sint" <w: Width> => ast::TypeGround::SInt(Some(w)),
-    "sint"            => ast::TypeGround::SInt(None),
+pub TypeGround: rusty_firrtl::TypeGround = {
+    "reset" => rusty_firrtl::TypeGround::Reset,
+    "clock" => rusty_firrtl::TypeGround::Clock,
+    "async_reset" => rusty_firrtl::TypeGround::AsyncReset,
+    "uint" <w: Width> => rusty_firrtl::TypeGround::UInt(Some(w)),
+    "uint"            => rusty_firrtl::TypeGround::UInt(None),
+    "sint" <w: Width> => rusty_firrtl::TypeGround::SInt(Some(w)),
+    "sint"            => rusty_firrtl::TypeGround::SInt(None),
 };
 
-pub Fields: ast::Fields = {
+pub Fields: rusty_firrtl::Fields = {
     <mut head: Fields> "symbol" <tail: Field> => { head.push(Box::new(tail)); head } ,
     <head: Field> => vec![Box::new(head)],
 };
 
-pub Field: ast::Field = {
-    <name: Identifier> "symbol" <tpe: Type> => ast::Field::Straight(name, Box::new(tpe)),
-    "flip" <name: Identifier> "symbol" <tpe: Type> => ast::Field::Flipped(name, Box::new(tpe)),
+pub Field: rusty_firrtl::Field = {
+    <name: Identifier> "symbol" <tpe: Type> => rusty_firrtl::Field::Straight(name, Box::new(tpe)),
+    "flip" <name: Identifier> "symbol" <tpe: Type> => rusty_firrtl::Field::Flipped(name, Box::new(tpe)),
 };
 
-pub TypeAggregate: ast::TypeAggregate = {
-    "{" "}" => ast::TypeAggregate::Fields(Box::new(vec![])),
-    "{" <fields: Fields> "}" => ast::TypeAggregate::Fields(Box::new(fields)),
-    <tpe: Type> "[" <i: "int"> "]"  => ast::TypeAggregate::Array(Box::new(tpe), i),
-    <tpe: Type> "[" <i: "id"> "]"  => ast::TypeAggregate::Array(Box::new(tpe), i),
+pub TypeAggregate: rusty_firrtl::TypeAggregate = {
+    "{" "}" => rusty_firrtl::TypeAggregate::Fields(Box::new(vec![])),
+    "{" <fields: Fields> "}" => rusty_firrtl::TypeAggregate::Fields(Box::new(fields)),
+    <tpe: Type> "[" <i: "int"> "]"  => rusty_firrtl::TypeAggregate::Array(Box::new(tpe), i),
+    <tpe: Type> "[" <i: "id"> "]"  => rusty_firrtl::TypeAggregate::Array(Box::new(tpe), i),
 };
 
-pub Type: ast::Type = {
-  <tg: TypeGround> => ast::Type::TypeGround(tg),
-  // "const" <tg: TypeGround> => ast::Type::ConstTypeGround(tg),
-  <ta: TypeAggregate> => ast::Type::TypeAggregate(Box::new(ta)),
-  // "const" <ta: TypeAggregate> => ast::Type::ConstTypeAggregate(Box::new(ta)),
+pub Type: rusty_firrtl::Type = {
+  <tg: TypeGround> => rusty_firrtl::Type::TypeGround(tg),
+  // "const" <tg: TypeGround> => rusty_firrtl::Type::ConstTypeGround(tg),
+  <ta: TypeAggregate> => rusty_firrtl::Type::TypeAggregate(Box::new(ta)),
+  // "const" <ta: TypeAggregate> => rusty_firrtl::Type::ConstTypeAggregate(Box::new(ta)),
 };
 
-pub Identifier: ast::Identifier = {
-    <id: "id">    => ast::Identifier::ID(id),
-    "inst"        => ast::Identifier::Name("inst".to_string()),
-    "printf"      => ast::Identifier::Name("printf".to_string()),
-    "assert"      => ast::Identifier::Name("assert".to_string()),
-    "smem"        => ast::Identifier::Name("smem".to_string()),
-    "cmem"        => ast::Identifier::Name("cmem".to_string()),
-    "of"          => ast::Identifier::Name("of".to_string()),
-    "reg"         => ast::Identifier::Name("reg".to_string()),
-    "input"       => ast::Identifier::Name("input".to_string()),
-    "output"      => ast::Identifier::Name("output".to_string()),
-    "invalidate"  => ast::Identifier::Name("invalidate".to_string()),
-    "mux"         => ast::Identifier::Name("mux".to_string()),
-    "stop"        => ast::Identifier::Name("stop".to_string()),
-    "depth"       => ast::Identifier::Name("depth".to_string()),
-    "skip"        => ast::Identifier::Name("skip".to_string()),
-    "write"       => ast::Identifier::Name("write".to_string()),
-    "read"        => ast::Identifier::Name("read".to_string()),
-    "version"     => ast::Identifier::Name("version".to_string()),
-    "probe"       => ast::Identifier::Name("probe".to_string()),
-    "module"      => ast::Identifier::Name("module".to_string()),
-    "const"       => ast::Identifier::Name("const".to_string()),
-    <x: "primop_e2"> => ast::Identifier::Name(x),
-    <x: "primop_e1"> => ast::Identifier::Name(x),
-    <x: "primop_e1i1"> => ast::Identifier::Name(x),
-    <identifier: "identifier"> => ast::Identifier::Name(identifier),
+pub Identifier: rusty_firrtl::Identifier = {
+    <id: "id">    => rusty_firrtl::Identifier::ID(id),
+    "inst"        => rusty_firrtl::Identifier::Name("inst".to_string()),
+    "printf"      => rusty_firrtl::Identifier::Name("printf".to_string()),
+    "assert"      => rusty_firrtl::Identifier::Name("assert".to_string()),
+    "smem"        => rusty_firrtl::Identifier::Name("smem".to_string()),
+    "cmem"        => rusty_firrtl::Identifier::Name("cmem".to_string()),
+    "of"          => rusty_firrtl::Identifier::Name("of".to_string()),
+    "reg"         => rusty_firrtl::Identifier::Name("reg".to_string()),
+    "input"       => rusty_firrtl::Identifier::Name("input".to_string()),
+    "output"      => rusty_firrtl::Identifier::Name("output".to_string()),
+    "invalidate"  => rusty_firrtl::Identifier::Name("invalidate".to_string()),
+    "mux"         => rusty_firrtl::Identifier::Name("mux".to_string()),
+    "stop"        => rusty_firrtl::Identifier::Name("stop".to_string()),
+    "depth"       => rusty_firrtl::Identifier::Name("depth".to_string()),
+    "skip"        => rusty_firrtl::Identifier::Name("skip".to_string()),
+    "write"       => rusty_firrtl::Identifier::Name("write".to_string()),
+    "read"        => rusty_firrtl::Identifier::Name("read".to_string()),
+    "version"     => rusty_firrtl::Identifier::Name("version".to_string()),
+    "probe"       => rusty_firrtl::Identifier::Name("probe".to_string()),
+    "module"      => rusty_firrtl::Identifier::Name("module".to_string()),
+    "const"       => rusty_firrtl::Identifier::Name("const".to_string()),
+    <x: "primop_e2"> => rusty_firrtl::Identifier::Name(x),
+    <x: "primop_e1"> => rusty_firrtl::Identifier::Name(x),
+    <x: "primop_e1i1"> => rusty_firrtl::Identifier::Name(x),
+    <identifier: "identifier"> => rusty_firrtl::Identifier::Name(identifier),
 };
 
-pub PrimOp2Expr: ast::PrimOp2Expr = {
-    <op: "primop_e2"> "(" => ast::PrimOp2Expr::from(op),
+pub PrimOp2Expr: rusty_firrtl::PrimOp2Expr = {
+    <op: "primop_e2"> "(" => rusty_firrtl::PrimOp2Expr::from(op),
 };
 
-pub PrimOp1Expr: ast::PrimOp1Expr = {
-    <op: "primop_e1"> "(" => ast::PrimOp1Expr::from(op),
+pub PrimOp1Expr: rusty_firrtl::PrimOp1Expr = {
+    <op: "primop_e1"> "(" => rusty_firrtl::PrimOp1Expr::from(op),
 };
 
-pub PrimOp1Expr1Int: ast::PrimOp1Expr1Int = {
-    <op: "primop_e1i1"> "(" => ast::PrimOp1Expr1Int::from(op),
+pub PrimOp1Expr1Int: rusty_firrtl::PrimOp1Expr1Int = {
+    <op: "primop_e1i1"> "(" => rusty_firrtl::PrimOp1Expr1Int::from(op),
 };
 
-pub PrimOp1Expr2Int: ast::PrimOp1Expr2Int = {
-    <op: "primop_e1i2"> => ast::PrimOp1Expr2Int::from(op),
+pub PrimOp1Expr2Int: rusty_firrtl::PrimOp1Expr2Int = {
+    <op: "primop_e1i2"> => rusty_firrtl::PrimOp1Expr2Int::from(op),
 };
 
-pub Exprs: ast::Exprs = {
+pub Exprs: rusty_firrtl::Exprs = {
     <mut head: Exprs> "symbol" <tail: Expr> => { head.push(Box::new(tail)); head },
     <head: Expr> => vec![Box::new(head)],
 };
 
-pub Expr: ast::Expr = {
-    <u: "uint"> <w: Width> "(" ")" => ast::Expr::UIntNoInit(w),
-    <u: "uint"> <w: Width> "(" <i: "int"> ")" => ast::Expr::UIntInit(w, i),
-    <u: "uint"> <w: Width> "(" <ri: "radixint"> ")" => ast::Expr::UIntInit(w, ast::Expr::parse_radixint(&ri).expect("parse_radixint")),
-    <s: "sint"> <w: Width> "(" ")" => ast::Expr::SIntNoInit(w),
-    <s: "sint"> <w: Width> "(" <i: "int"> ")" => ast::Expr::SIntInit(w, i),
-    <s: "sint"> <w: Width> "(" <ri: "radixint"> ")" => ast::Expr::SIntInit(w, ast::Expr::parse_radixint(&ri).expect("parse_radixint")),
-    <r: Reference> => ast::Expr::Reference(r),
-    <m: "mux"> "(" <sel: Expr> "symbol" <exp_true: Expr> "symbol" <exp_false: Expr> ")" => ast::Expr::Mux(Box::new(sel), Box::new(exp_true), Box::new(exp_false)),
-    <vif: "validif"> "(" <if_expr: Expr> "symbol" <expr: Expr> ")" => ast::Expr::ValidIf(Box::new(if_expr), Box::new(expr)),
-    <op: PrimOp2Expr>     <e1: Expr> "symbol" <e2: Expr> ")" => ast::Expr::PrimOp2Expr(op, Box::new(e1), Box::new(e2)),
-    <op: PrimOp1Expr>     <e1: Expr> ")" => ast::Expr::PrimOp1Expr(op, Box::new(e1)),
-    <op: PrimOp1Expr1Int> <e1: Expr> "symbol" <int: "int"> ")" => ast::Expr::PrimOp1Expr1Int(op, Box::new(e1), int),
-    <op: PrimOp1Expr2Int> <e1: Expr> "symbol" <int1: "int"> "symbol" <int2: "int"> ")" => ast::Expr::PrimOp1Expr2Int(op, Box::new(e1), int1, int2),
+pub Expr: rusty_firrtl::Expr = {
+    <u: "uint"> <w: Width> "(" ")" => rusty_firrtl::Expr::UIntNoInit(w),
+    <u: "uint"> <w: Width> "(" <i: "int"> ")" => rusty_firrtl::Expr::UIntInit(w, i),
+    <u: "uint"> <w: Width> "(" <ri: "radixint"> ")" => rusty_firrtl::Expr::UIntInit(w, rusty_firrtl::Expr::parse_radixint_chirrtl(&ri).expect("parse_radixint")),
+    <s: "sint"> <w: Width> "(" ")" => rusty_firrtl::Expr::SIntNoInit(w),
+    <s: "sint"> <w: Width> "(" <i: "int"> ")" => rusty_firrtl::Expr::SIntInit(w, i),
+    <s: "sint"> <w: Width> "(" <ri: "radixint"> ")" => rusty_firrtl::Expr::SIntInit(w, rusty_firrtl::Expr::parse_radixint_chirrtl(&ri).expect("parse_radixint")),
+    <r: Reference> => rusty_firrtl::Expr::Reference(r),
+    <m: "mux"> "(" <sel: Expr> "symbol" <exp_true: Expr> "symbol" <exp_false: Expr> ")" => rusty_firrtl::Expr::Mux(Box::new(sel), Box::new(exp_true), Box::new(exp_false)),
+    <vif: "validif"> "(" <if_expr: Expr> "symbol" <expr: Expr> ")" => rusty_firrtl::Expr::ValidIf(Box::new(if_expr), Box::new(expr)),
+    <op: PrimOp2Expr>     <e1: Expr> "symbol" <e2: Expr> ")" => rusty_firrtl::Expr::PrimOp2Expr(op, Box::new(e1), Box::new(e2)),
+    <op: PrimOp1Expr>     <e1: Expr> ")" => rusty_firrtl::Expr::PrimOp1Expr(op, Box::new(e1)),
+    <op: PrimOp1Expr1Int> <e1: Expr> "symbol" <int: "int"> ")" => rusty_firrtl::Expr::PrimOp1Expr1Int(op, Box::new(e1), int),
+    <op: PrimOp1Expr2Int> <e1: Expr> "symbol" <int1: "int"> "symbol" <int2: "int"> ")" => rusty_firrtl::Expr::PrimOp1Expr2Int(op, Box::new(e1), int1, int2),
 
     // TODO: add all other primop cases
     // <op: PrimOp1Expr2Int> <e1: "primop_e1i1"> "symbol" <int1: "int"> "symbol" <int2: "int"> ")" => {
-    //   ast::Expr::PrimOp1Expr2Int(op, Box::new(ast::Expr::Reference(ast::Reference::Ref(ast::Identifier::Name(e1)))), int1, int2)
+    //   rusty_firrtl::Expr::PrimOp1Expr2Int(op, Box::new(rusty_firrtl::Expr::Reference(rusty_firrtl::Reference::Ref(rusty_firrtl::Identifier::Name(e1)))), int1, int2)
     // },
 };
 
-pub ChirrtlMemoryDataType: ast::Type = {
+pub ChirrtlMemoryDataType: rusty_firrtl::Type = {
     <tpe: Type> => { tpe }
 };
 
-pub ChirrtlMemoryReadUnderWrite: ast::ChirrtlMemoryReadUnderWrite = {
+pub ChirrtlMemoryReadUnderWrite: rusty_firrtl::ChirrtlMemoryReadUnderWrite = {
     // FIXME: Properly set this flag
-    "read_under_write" => ast::ChirrtlMemoryReadUnderWrite::default(),
+    "read_under_write" => rusty_firrtl::ChirrtlMemoryReadUnderWrite::default(),
 };
 
-pub ChirrtlMemory: ast::ChirrtlMemory = {
-    "smem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> "symbol" <ruw: ChirrtlMemoryReadUnderWrite> <info: Info> => ast::ChirrtlMemory::SMem(name, tpe, Some(ruw), info),
-    "smem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => ast::ChirrtlMemory::SMem(name, tpe, None, info),
-    "cmem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => ast::ChirrtlMemory::CMem(name, tpe, info),
+pub ChirrtlMemory: rusty_firrtl::ChirrtlMemory = {
+    "smem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> "symbol" <ruw: ChirrtlMemoryReadUnderWrite> <info: Info> => rusty_firrtl::ChirrtlMemory::SMem(name, tpe, Some(ruw), info),
+    "smem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => rusty_firrtl::ChirrtlMemory::SMem(name, tpe, None, info),
+    "cmem" <name: Identifier> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => rusty_firrtl::ChirrtlMemory::CMem(name, tpe, info),
 
     // TODO: add all other primop cases
-    // "smem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> "symbol" <ruw: ChirrtlMemoryReadUnderWrite> <info: Info> => ast::ChirrtlMemory::SMem(ast::Identifier::Name(name), tpe, Some(ruw), info),
-    // "smem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => ast::ChirrtlMemory::SMem(ast::Identifier::Name(name), tpe, None, info),
-    // "cmem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => ast::ChirrtlMemory::CMem(ast::Identifier::Name(name), tpe, info),
+    // "smem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> "symbol" <ruw: ChirrtlMemoryReadUnderWrite> <info: Info> => rusty_firrtl::ChirrtlMemory::SMem(rusty_firrtl::Identifier::Name(name), tpe, Some(ruw), info),
+    // "smem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => rusty_firrtl::ChirrtlMemory::SMem(rusty_firrtl::Identifier::Name(name), tpe, None, info),
+    // "cmem" <name: "primop_e1i1"> "symbol" <tpe: ChirrtlMemoryDataType> <info: Info> => rusty_firrtl::ChirrtlMemory::CMem(rusty_firrtl::Identifier::Name(name), tpe, info),
 };
 
-pub ChirrtlMemoryPort: ast::ChirrtlMemoryPort = {
-    "write" "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => ast::ChirrtlMemoryPort::Write(name, mem_ref, addr_ref, clk_ref, info),
-    "read"  "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => ast::ChirrtlMemoryPort::Read(name, mem_ref, addr_ref, clk_ref, info),
-    "infer" "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => ast::ChirrtlMemoryPort::Infer(name, mem_ref, addr_ref, clk_ref, info),
+pub ChirrtlMemoryPort: rusty_firrtl::ChirrtlMemoryPort = {
+    "write" "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => rusty_firrtl::ChirrtlMemoryPort::Write(name, mem_ref, addr_ref, clk_ref, info),
+    "read"  "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => rusty_firrtl::ChirrtlMemoryPort::Read(name, mem_ref, addr_ref, clk_ref, info),
+    "infer" "mport" <name: Identifier> "symbol" <mem_ref: Identifier> "[" <addr_ref: Expr> "]" "symbol" <clk_ref: Reference> <info: Info> => rusty_firrtl::ChirrtlMemoryPort::Infer(name, mem_ref, addr_ref, clk_ref, info),
 }
 
 // pub Refs = Comma<Ref>;
 
-pub Reference: ast::Reference = {
-    <name: Identifier> => ast::Reference::Ref(name),
-    <r: Reference> "." <idx: Identifier> => ast::Reference::RefDot(Box::new(r), idx),
-    <r: Reference> "[" <idx: "int"> "]" => ast::Reference::RefIdxInt(Box::new(r), idx),
-    <r: Reference> "[" <idx: Expr> "]" => ast::Reference::RefIdxExpr(Box::new(r), Box::new(idx)),
+pub Reference: rusty_firrtl::Reference = {
+    <name: Identifier> => rusty_firrtl::Reference::Ref(name),
+    <r: Reference> "." <idx: Identifier> => rusty_firrtl::Reference::RefDot(Box::new(r), idx),
+    <r: Reference> "[" <idx: "int"> "]" => rusty_firrtl::Reference::RefIdxInt(Box::new(r), idx),
+    <r: Reference> "[" <idx: Expr> "]" => rusty_firrtl::Reference::RefIdxExpr(Box::new(r), Box::new(idx)),
 };
 
 
-pub Stmts: ast::Stmts = {
+pub Stmts: rusty_firrtl::Stmts = {
     <mut head: Stmts> <tail: Stmt> => { head.push(Box::new(tail)); head } ,
     <head: Stmt> => vec![Box::new(head)],
 };
 
-pub Stmt: ast::Stmt = {
-  "wire" <name: Identifier> "symbol" <tpe: Type> <info: Info> => ast::Stmt::Wire(name, tpe, info),
-  "wire" <name: Identifier> "symbol" <tpe: Type>              => ast::Stmt::Wire(name, tpe, ast::Info::default()),
-  "reg" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> <info: Info> => ast::Stmt::Reg(name, tpe, clk, info),
-  "reg" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr>              => ast::Stmt::Reg(name, tpe, clk, ast::Info::default()),
-  "reg_reset" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> "symbol" <rst: Expr> "symbol" <init: Expr> <info: Info> => ast::Stmt::RegReset(name, tpe, clk, rst, init, info),
-  "reg_reset" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> "symbol" <rst: Expr> "symbol" <init: Expr>              => ast::Stmt::RegReset(name, tpe, clk, rst, init, ast::Info::default()),
+pub Stmt: rusty_firrtl::Stmt = {
+  "wire" <name: Identifier> "symbol" <tpe: Type> <info: Info> => rusty_firrtl::Stmt::Wire(name, tpe, info),
+  "wire" <name: Identifier> "symbol" <tpe: Type>              => rusty_firrtl::Stmt::Wire(name, tpe, rusty_firrtl::Info::default()),
+  "reg" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> <info: Info> => rusty_firrtl::Stmt::Reg(name, tpe, clk, info),
+  "reg" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr>              => rusty_firrtl::Stmt::Reg(name, tpe, clk, rusty_firrtl::Info::default()),
+  "reg_reset" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> "symbol" <rst: Expr> "symbol" <init: Expr> <info: Info> => rusty_firrtl::Stmt::RegReset(name, tpe, clk, rst, init, info),
+  "reg_reset" <name: Identifier> "symbol" <tpe: Type> "symbol" <clk: Expr> "symbol" <rst: Expr> "symbol" <init: Expr>              => rusty_firrtl::Stmt::RegReset(name, tpe, clk, rst, init, rusty_firrtl::Info::default()),
 
-  <m: ChirrtlMemory> => ast::Stmt::ChirrtlMemory(m),
-  <mp: ChirrtlMemoryPort> => ast::Stmt::ChirrtlMemoryPort(mp),
+  <m: ChirrtlMemory> => rusty_firrtl::Stmt::ChirrtlMemory(m),
+  <mp: ChirrtlMemoryPort> => rusty_firrtl::Stmt::ChirrtlMemoryPort(mp),
 
-  "inst" <inst: Identifier> "of" <module: Identifier> <info: Info> => ast::Stmt::Inst(inst, module, info),
-  "inst" <inst: Identifier> "of" <module: Identifier>              => ast::Stmt::Inst(inst, module, ast::Info::default()),
+  "inst" <inst: Identifier> "of" <module: Identifier> <info: Info> => rusty_firrtl::Stmt::Inst(inst, module, info),
+  "inst" <inst: Identifier> "of" <module: Identifier>              => rusty_firrtl::Stmt::Inst(inst, module, rusty_firrtl::Info::default()),
 
-  "node" <name: Identifier> "symbol" <expr: Expr> <info: Info> => ast::Stmt::Node(name, expr, info),
-  "node" <name: Identifier> "symbol" <expr: Expr>              => ast::Stmt::Node(name, expr, ast::Info::default()),
+  "node" <name: Identifier> "symbol" <expr: Expr> <info: Info> => rusty_firrtl::Stmt::Node(name, expr, info),
+  "node" <name: Identifier> "symbol" <expr: Expr>              => rusty_firrtl::Stmt::Node(name, expr, rusty_firrtl::Info::default()),
 
   // TODO: add all other primop cases
-  // "node" <name: "primop_e1i1"> "symbol" <expr: Expr> <info: Info> => ast::Stmt::Node(ast::Identifier::Name(name), expr, info),
+  // "node" <name: "primop_e1i1"> "symbol" <expr: Expr> <info: Info> => rusty_firrtl::Stmt::Node(rusty_firrtl::Identifier::Name(name), expr, info),
 
-  "connect" <sink: Expr> "symbol" <driver: Expr> <info: Info> => ast::Stmt::Connect(sink, driver, info),
-  "connect" <sink: Expr> "symbol" <driver: Expr>              => ast::Stmt::Connect(sink, driver, ast::Info::default()),
-  "invalidate" <exp: Expr> <info: Info> => ast::Stmt::Invalidate(exp, info),
-  "invalidate" <exp: Expr>              => ast::Stmt::Invalidate(exp, ast::Info::default()),
+  "connect" <sink: Expr> "symbol" <driver: Expr> <info: Info> => rusty_firrtl::Stmt::Connect(sink, driver, info),
+  "connect" <sink: Expr> "symbol" <driver: Expr>              => rusty_firrtl::Stmt::Connect(sink, driver, rusty_firrtl::Info::default()),
+  "invalidate" <exp: Expr> <info: Info> => rusty_firrtl::Stmt::Invalidate(exp, info),
+  "invalidate" <exp: Expr>              => rusty_firrtl::Stmt::Invalidate(exp, rusty_firrtl::Info::default()),
 
-  "when" <cond: Expr> "symbol" <info: Info> "indent" <stmts_true: Stmts> "dedent" "else" "symbol" "indent" <stmts_false: Stmts> "dedent" => ast::Stmt::When(cond, info, stmts_true, Some(stmts_false)),
-  "when" <cond: Expr> "symbol" <info: Info> "indent" <stmts_true: Stmts> "dedent"  => ast::Stmt::When(cond, info, stmts_true, None),
+  "when" <cond: Expr> "symbol" <info: Info> "indent" <stmts_true: Stmts> "dedent" "else" "symbol" "indent" <stmts_false: Stmts> "dedent" => rusty_firrtl::Stmt::When(cond, info, stmts_true, Some(stmts_false)),
+  "when" <cond: Expr> "symbol" <info: Info> "indent" <stmts_true: Stmts> "dedent"  => rusty_firrtl::Stmt::When(cond, info, stmts_true, None),
 
-  "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent" "else" "symbol" "indent" <stmts_false: Stmts> "dedent" => ast::Stmt::When(cond, ast::Info::default(), stmts_true, Some(stmts_false)),
-  "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent"  => ast::Stmt::When(cond, ast::Info::default(), stmts_true, None),
+  "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent" "else" "symbol" "indent" <stmts_false: Stmts> "dedent" => rusty_firrtl::Stmt::When(cond, rusty_firrtl::Info::default(), stmts_true, Some(stmts_false)),
+  "when" <cond: Expr> "symbol"              "indent" <stmts_true: Stmts> "dedent"  => rusty_firrtl::Stmt::When(cond, rusty_firrtl::Info::default(), stmts_true, None),
 
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" <info: Info> => ast::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Printf(Some(name), clk, clk_val, msg, None, info),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" <info: Info> => ast::Stmt::Printf(None, clk, clk_val, msg, None, info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier> <info: Info> => rusty_firrtl::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" <info: Info> => rusty_firrtl::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier> <info: Info> => rusty_firrtl::Stmt::Printf(Some(name), clk, clk_val, msg, None, info),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" <info: Info> => rusty_firrtl::Stmt::Printf(None, clk, clk_val, msg, None, info),
 
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")"              => ast::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier>              => ast::Stmt::Printf(Some(name), clk, clk_val, msg, None, ast::Info::default()),
-  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")"              => ast::Stmt::Printf(None, clk, clk_val, msg, None, ast::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")" "symbol" <name: Identifier>              => rusty_firrtl::Stmt::Printf(Some(name), clk, clk_val, msg, Some(exprs), rusty_firrtl::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string"> "symbol" <exprs: Exprs> ")"              => rusty_firrtl::Stmt::Printf(None, clk, clk_val, msg, Some(exprs), rusty_firrtl::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")" "symbol" <name: Identifier>              => rusty_firrtl::Stmt::Printf(Some(name), clk, clk_val, msg, None, rusty_firrtl::Info::default()),
+  "printf" "(" <clk: Expr> "symbol" <clk_val: Expr> "symbol" <msg: "string">                         ")"              => rusty_firrtl::Stmt::Printf(None, clk, clk_val, msg, None, rusty_firrtl::Info::default()),
 
-  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier> <info: Info> => ast::Stmt::Assert(Some(name), clk, pred, cond, msg, info),
-  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier>              => ast::Stmt::Assert(Some(name), clk, pred, cond, msg, ast::Info::default()),
+  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier> <info: Info> => rusty_firrtl::Stmt::Assert(Some(name), clk, pred, cond, msg, info),
+  "assert" "(" <clk: Expr> "symbol" <pred: Expr> "symbol" <cond: Expr> "symbol" <msg: "string"> ")" "symbol" <name: Identifier>              => rusty_firrtl::Stmt::Assert(Some(name), clk, pred, cond, msg, rusty_firrtl::Info::default()),
 
-  "skip"              => ast::Stmt::Skip(ast::Info::default()),
-  "skip" <info: Info> => ast::Stmt::Skip(info),
+  "skip"              => rusty_firrtl::Stmt::Skip(rusty_firrtl::Info::default()),
+  "skip" <info: Info> => rusty_firrtl::Stmt::Skip(info),
 };
 
-pub Ports: ast::Ports = {
+pub Ports: rusty_firrtl::Ports = {
     <mut head: Ports> <tail: Port> => { head.push(Box::new(tail)); head } ,
     <head: Port> => vec![Box::new(head)],
 };
 
-pub Port: ast::Port = {
-    "input"  <name: Identifier> "symbol" <tpe: Type> <info: Info> => ast::Port::Input(name, tpe, info),
-    "input"  <name: Identifier> "symbol" <tpe: Type>              => ast::Port::Input(name, tpe, ast::Info::default()),
-    "output" <name: Identifier> "symbol" <tpe: Type> <info: Info> => ast::Port::Output(name, tpe, info),
-    "output" <name: Identifier> "symbol" <tpe: Type>              => ast::Port::Output(name, tpe, ast::Info::default()),
+pub Port: rusty_firrtl::Port = {
+    "input"  <name: Identifier> "symbol" <tpe: Type> <info: Info> => rusty_firrtl::Port::Input(name, tpe, info),
+    "input"  <name: Identifier> "symbol" <tpe: Type>              => rusty_firrtl::Port::Input(name, tpe, rusty_firrtl::Info::default()),
+    "output" <name: Identifier> "symbol" <tpe: Type> <info: Info> => rusty_firrtl::Port::Output(name, tpe, info),
+    "output" <name: Identifier> "symbol" <tpe: Type>              => rusty_firrtl::Port::Output(name, tpe, rusty_firrtl::Info::default()),
 };
 
-pub Module: ast::Module = {
-             "module" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <stmts: Stmts> "dedent" => ast::Module::new(name, ports, stmts, info),
-    "public" "module" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <stmts: Stmts> "dedent" => ast::Module::new(name, ports, stmts, info),
+pub Module: rusty_firrtl::Module = {
+             "module" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <stmts: Stmts> "dedent" => rusty_firrtl::Module::new(name, ports, stmts, info),
+    "public" "module" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <stmts: Stmts> "dedent" => rusty_firrtl::Module::new(name, ports, stmts, info),
 };
 
-pub DefName: ast::DefName = {
-    "defname" "symbol" <name: Identifier> => ast::DefName::from(name),
+pub DefName: rusty_firrtl::DefName = {
+    "defname" "symbol" <name: Identifier> => rusty_firrtl::DefName::from(name),
 };
 
-pub Parameter: ast::Parameter = {
-    "parameter" <name: Identifier> "symbol" <msg: "string"> => ast::Parameter::StringParam(name, msg),
-    "parameter" <name: Identifier> "symbol" <val: Float>    => ast::Parameter::FloatParam(name, val),
-    "parameter" <name: Identifier> "symbol" <val: "int">    => ast::Parameter::IntParam(name, val),
+pub Parameter: rusty_firrtl::Parameter = {
+    "parameter" <name: Identifier> "symbol" <msg: "string"> => rusty_firrtl::Parameter::StringParam(name, msg),
+    "parameter" <name: Identifier> "symbol" <val: Float>    => rusty_firrtl::Parameter::FloatParam(name, val),
+    "parameter" <name: Identifier> "symbol" <val: "int">    => rusty_firrtl::Parameter::IntParam(name, val),
 };
 
-pub Parameters: ast::Parameters = {
+pub Parameters: rusty_firrtl::Parameters = {
     <mut head: Parameters> <tail: Parameter> => { head.push(Box::new(tail)); head } ,
     <head: Parameter> => vec![Box::new(head)],
 };
 
-pub ExtModule: ast::ExtModule = {
-    "extmodule" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <defname: DefName> <params: Parameters> "dedent" => ast::ExtModule::new(name, ports, defname, params, info),
-    "extmodule" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <defname: DefName>                      "dedent" => ast::ExtModule::new(name, ports, defname, vec![], info),
+pub ExtModule: rusty_firrtl::ExtModule = {
+    "extmodule" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <defname: DefName> <params: Parameters> "dedent" => rusty_firrtl::ExtModule::new(name, ports, defname, params, info),
+    "extmodule" <name: Identifier> "symbol" <info: Info> "indent" <ports: Ports> <defname: DefName>                      "dedent" => rusty_firrtl::ExtModule::new(name, ports, defname, vec![], info),
 };
 
-pub Annotations: ast::Annotations = {
-    <a: "annotations"> => ast::Annotations::from_str(a)
+pub Annotations: rusty_firrtl::Annotations = {
+    <a: "annotations"> => rusty_firrtl::Annotations::from_str(a)
 };
 
-pub Version: ast::Version = {
-    "FIRRTL" "version" <a: "int"> "." <b: "id"> "." <c: "id"> => ast::Version(a.to_u32(), b.to_u32(), c.to_u32()),
+pub Version: rusty_firrtl::Version = {
+    "FIRRTL" "version" <a: "int"> "." <b: "id"> "." <c: "id"> => rusty_firrtl::Version(a.to_u32(), b.to_u32(), c.to_u32()),
 };
 
-pub CircuitModule: ast::CircuitModule = {
-    <m: Module> => ast::CircuitModule::Module(m),
-    <em: ExtModule> => ast::CircuitModule::ExtModule(em),
+pub CircuitModule: rusty_firrtl::CircuitModule = {
+    <m: Module> => rusty_firrtl::CircuitModule::Module(m),
+    <em: ExtModule> => rusty_firrtl::CircuitModule::ExtModule(em),
 };
 
-pub CircuitModules: ast::CircuitModules = {
+pub CircuitModules: rusty_firrtl::CircuitModules = {
     <mut head: CircuitModules> <tail: CircuitModule> => { head.push(Box::new(tail)); head } ,
     <head: CircuitModule> => vec![Box::new(head)],
 };
 
-pub Circuit: ast::Circuit = {
-                       "circuit" <name: Identifier> "symbol" "indent" <modules: CircuitModules> "dedent" => ast::Circuit::new(ast::Version::default(), name, ast::Annotations::default(), modules),
-    <version: Version> "circuit" <name: Identifier> "symbol" "indent" <modules: CircuitModules> "dedent" => ast::Circuit::new(version, name, ast::Annotations::default(), modules),
-                       "circuit" <name: Identifier> "symbol" <annos: Annotations> "indent" <modules: CircuitModules> "dedent" => ast::Circuit::new(ast::Version::default(), name, annos, modules),
-    <version: Version> "circuit" <name: Identifier> "symbol" <annos: Annotations> "indent" <modules: CircuitModules> "dedent" => ast::Circuit::new(version, name, annos, modules),
+pub Circuit: rusty_firrtl::Circuit = {
+                       "circuit" <name: Identifier> "symbol" "indent" <modules: CircuitModules> "dedent" => rusty_firrtl::Circuit::new(rusty_firrtl::Version::default(), name, rusty_firrtl::Annotations::default(), modules),
+    <version: Version> "circuit" <name: Identifier> "symbol" "indent" <modules: CircuitModules> "dedent" => rusty_firrtl::Circuit::new(version, name, rusty_firrtl::Annotations::default(), modules),
+                       "circuit" <name: Identifier> "symbol" <annos: Annotations> "indent" <modules: CircuitModules> "dedent" => rusty_firrtl::Circuit::new(rusty_firrtl::Version::default(), name, annos, modules),
+    <version: Version> "circuit" <name: Identifier> "symbol" <annos: Annotations> "indent" <modules: CircuitModules> "dedent" => rusty_firrtl::Circuit::new(version, name, annos, modules),
 }

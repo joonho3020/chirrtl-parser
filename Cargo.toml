@@ -20,6 +20,7 @@ indextree = "4.7.3"
 indextree-macros = "0.1.2"
 graphviz-rust = "0.9.3"
 indexmap = "2.7.1"
+rusty-firrtl = { git = "ssh://git@github.com/joonho3020/rusty-firrtl.git", branch = "main"}
 
 [build-dependencies]
 lalrpop = "0.22.1"
